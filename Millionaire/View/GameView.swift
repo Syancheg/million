@@ -8,100 +8,55 @@
 import UIKit
 
 protocol GameViewDelegate: class {
-    func newQuestion(newIndex: Int)
-    func stopGame()
+    func newAnswer(tag: Int)
 }
 
 class GameView: UIView {
     
-    
     weak var gameDelegate: GameViewDelegate?
-    var answer: Int = -1
-    var questionIndex: Int = 0
-    var trueAnswer: Int = -1
-
+    var userAnswer: Int?
+    
     @IBOutlet weak var questionLabel: UILabel!
-    @IBOutlet weak var answerOne: UIButton!
-    @IBOutlet weak var answerTwo: UIButton!
-    @IBOutlet weak var answerThree: UIButton!
-    @IBOutlet weak var answerFour: UIButton!
+    @IBOutlet weak var resultLabel: UILabel!
     @IBOutlet weak var submitButton: UIButton!
-
-    @IBAction func answerOne(_ sender: UIButton) {
-        answer = 0
-        selectAnswer(sender: sender)
-        activeNextButton()
-    }
-    @IBAction func answerTwo(_ sender: UIButton) {
-        answer = 1
-        selectAnswer(sender: sender)
-        activeNextButton()
-    }
-    @IBAction func answerThree(_ sender: UIButton) {
-        answer = 2
-        selectAnswer(sender: sender)
-        activeNextButton()
-    }
-    @IBAction func answerFour(_ sender: UIButton) {
-        answer = 3
-        selectAnswer(sender: sender)
-        activeNextButton()
-    }
+    @IBOutlet var answerButtons: [UIButton]!
+    
+    
     @IBAction func submit(_ sender: UIButton) {
-        unSelectedButtons()
-        if answer >= 0 {
-            if answer == trueAnswer {
-                questionIndex += 1
-                gameDelegate?.newQuestion(newIndex: questionIndex)
-            } else {
-                questionLabel.text = "Ответ не верный! Конец игры."
-                switch trueAnswer {
-                case 0:
-                    answerOne.backgroundColor = .green
-                case 1:
-                    answerTwo.backgroundColor = .green
-                case 2:
-                    answerThree.backgroundColor = .green
-                case 3:
-                    answerFour.backgroundColor = .green
-                default:
-                    break
-                }
-                gameDelegate?.stopGame()
-            }
+        guard let answer = userAnswer else { return }
+        gameDelegate?.newAnswer(tag: answer)
+    }
+    
+    func disabledButtons(){
+        answerButtons.forEach { (answerButton) in
+            answerButton.isEnabled = false
         }
-        
+    }
+    
+    func selectCorrectAnswer(index: Int){
+        answerButtons[index].backgroundColor = .purple
+    }
+    
+    func unSelectedButtons(){
+        answerButtons.forEach { (answerButton) in
+            answerButton.backgroundColor = .lightGray
+        }
     }
     
     override func awakeFromNib() {
-        answerOne.backgroundColor = .lightGray
-        answerTwo.backgroundColor = .lightGray
-        answerThree.backgroundColor = .lightGray
-        answerFour.backgroundColor = .lightGray
-        answerOne.tintColor = .white
-        answerTwo.tintColor = .white
-        answerThree.tintColor = .white
-        answerFour.tintColor = .white
-        answerOne.layer.cornerRadius = 5
-        answerTwo.layer.cornerRadius = 5
-        answerThree.layer.cornerRadius = 5
-        answerFour.layer.cornerRadius = 5
+        answerButtons.forEach { (answerButton) in
+            answerButton.backgroundColor = .lightGray
+            answerButton.tintColor = .white
+            answerButton.layer.cornerRadius = 5
+            answerButton.addTarget(self, action: #selector(answerTapped), for: .touchUpInside)
+        }
     }
     
-    private func selectAnswer(sender: UIButton){
+    @objc func answerTapped(_ sender: UIButton){
         unSelectedButtons()
         sender.backgroundColor = .orange
-    }
-    
-    private func unSelectedButtons(){
-        answerOne.backgroundColor = .lightGray
-        answerTwo.backgroundColor = .lightGray
-        answerThree.backgroundColor = .lightGray
-        answerFour.backgroundColor = .lightGray
-    }
-    
-    private func activeNextButton(){
         submitButton.isEnabled = true
+        userAnswer = sender.tag
     }
 
 }

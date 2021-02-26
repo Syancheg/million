@@ -9,6 +9,7 @@ import UIKit
 
 class Game {
     var gameSession: GameSession?
+    var difficulty: Difficulty = .random
     private let recordsCaretaker = RecordsCaretaker()
     private(set) var games: [GameSession] = [] {
         didSet {
@@ -24,9 +25,7 @@ class Game {
         guard let session = gameSession else {
             return
         }
-        let percent = (Float(session.countCorrectAnswer) / Float(session.countQuestions)) * 100
-        session.percent = Int(percent)
-        games.append(session)
+        games = [session] + games
         gameSession = nil
     }
 }
