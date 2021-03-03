@@ -13,7 +13,6 @@ class RecordTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        games.reverse()
     }
 
     // MARK: - Table view data source

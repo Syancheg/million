@@ -19,9 +19,11 @@ class GameSession: Codable {
     }
 }
 
-extension GameSession: GameSessionDelegate{
+extension GameSession: GameViewControllerSessionDelegate {
     func updateData(correctAnswer: Int) {
         countCorrectAnswer = correctAnswer
         countScope = correctAnswer
+        let percent = (Float(countCorrectAnswer) / Float(countQuestions)) * 100
+        self.percent = Int(percent)
     }
 }
